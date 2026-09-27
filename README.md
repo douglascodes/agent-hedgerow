@@ -13,10 +13,10 @@ Container sandboxing is rejected as the isolation boundary — too many escape v
 
 | Command | Purpose |
 | --- | --- |
-| `yarn test` | Unit suite, then integration suite |
+| `yarn test` | Both projects |
 | `yarn test:unit` | Fast. Pure logic only — no VM, no QEMU, no sockets |
 | `yarn test:integration` | Boots real QEMU VMs. Serial and slow |
-| `yarn test:watch` | Unit suite in watch mode |
+| `yarn test:watch` | Unit project in watch mode |
 | `yarn typecheck` | `tsc --noEmit` |
 | `yarn lint` | Biome check — lint, formatting, and import order |
 | `yarn lint:fix` | Same, applying fixes |
@@ -38,8 +38,12 @@ Two behaviours worth knowing:
 
 ## Test layout
 
-- `vitest.unit.config.ts` — `src/**/*.test.ts` and `test/unit/**/*.test.ts`. Unit tests live beside the code they cover.
-- `vitest.integration.config.ts` — `test/integration/**/*.test.ts`. These boot VMs, so they run one file at a time and get a two-minute budget per test.
+A single `vitest.config.ts` declares two projects, so both suites share one entry point while keeping rules that genuinely differ:
+
+- **`unit`** — `src/**/*.test.ts` and `test/unit/**/*.test.ts`. Fast and parallel; unit tests live beside the code they cover.
+- **`integration`** — `test/integration/**/*.test.ts`. These boot VMs, so they run one file at a time and get a two-minute budget per test.
+
+`yarn test` runs both projects. Selecting one is `--project unit` or `--project integration`, which the `test:unit` and `test:integration` scripts wrap.
 
 Integration tests will require a working QEMU once the VM substrate lands. The supervisor discovers QEMU rather than hardcoding a path, since a contributor's own build will live wherever they put it.
 
