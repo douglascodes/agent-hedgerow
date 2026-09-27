@@ -24,6 +24,15 @@ Container sandboxing is rejected as the isolation boundary — too many escape v
 | `yarn lint:fix` | Same, applying fixes |
 | `yarn format` | Rewrite files with the formatter |
 | `yarn format:check` | Verify formatting without writing |
+| `yarn circular` | Fail on circular imports under `src/` |
+
+## Continuous integration
+
+`.github/workflows/ci.yml` runs typecheck, lint, circular-dependency check, and both test projects on every push to `main` and every PR targeting it, on `ubuntu-26.04` with Node 24 from the `NODE_VERSION` env var.
+
+An OSV dependency scan runs last as an **advisory** check: `continue-on-error` means a known vulnerability surfaces as a failed step without blocking the branch. It downloads the scanner, verifies it against the release's `SHA256SUMS` before running it, and scans `yarn.lock`.
+
+Three things in that file look like omissions and are not. `cache: yarn` is absent because it is documented to break for Yarn 4 — setup-node's Yarn 1 shim cannot resolve the cache directory and fails before install. `corepack enable` is load-bearing: without it the runner uses Yarn 1.22.22 and ignores the `packageManager` pin. And `environment:` is absent because the `development` environment permits protected branches only, so it would refuse every PR job.
 
 Both test suites exit non-zero when no test file matches. That is deliberate: a suite that reports success with zero tests is a vacuous pass, and this project treats those as worse than no test at all.
 

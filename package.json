@@ -21,6 +21,7 @@
     "lint:fix": "biome check --write --error-on-warnings",
     "format": "biome format --write",
     "format:check": "biome format",
+    "circular": "dpdm --skip-dynamic-imports circular --no-warning --no-tree --exit-code circular:1 './src/**'",
     "prepare": "husky"
   },
   "lint-staged": {
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@types/node": "^26.6.2",
+    "dpdm": "^4.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^17.5.1",
     "typescript": "^7.0.2",

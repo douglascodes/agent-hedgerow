@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# The workflow only reads the repository. Scoping the token here means a
+# compromised action in this file cannot push or alter anything.
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  checks:
+    name: typecheck, lint, circular, and tests
+    runs-on: ubuntu-26.04
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # setup-node ships Yarn 1. Without this the packageManager pin in
+      # package.json is ignored, Yarn 1.22.22 runs instead, and the install
+      # fails outright.
+      - run: corepack enable
+
+      # --immutable fails if the lockfile would change, so a stale lockfile
+      # cannot reach main through a green build.
+      - run: yarn install --immutable
+
+      - run: yarn typecheck
+      - run: yarn lint
+      - run: yarn circular
+      - run: yarn test
+
+      # Advisory: a vulnerable dependency is reported, never gated on.
+      # continue-on-error makes a finding show as a failed step without
+      # blocking the branch. Last, so the gating checks report first and a
+      # slow network fetch cannot delay them.
+      - name: Check dependencies for known vulnerabilities (advisory)
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          OSV_VERSION=v2.6.0
+          BASE="https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}"
+          curl -fsSL -o osv-scanner_linux_amd64 "${BASE}/osv-scanner_linux_amd64"
+          curl -fsSL -o osv-scanner_SHA256SUMS "${BASE}/osv-scanner_SHA256SUMS"
+          # The sums file names the asset, so verification has to happen while
+          # the download still carries that name.
+          grep ' osv-scanner_linux_amd64$' osv-scanner_SHA256SUMS | sha256sum -c -
+          chmod +x osv-scanner_linux_amd64
+          ./osv-scanner_linux_amd64 scan source -r .
+
+# Deliberately absent: `cache: yarn` on setup-node, which is documented to fail
+# for Yarn 4 projects (its Yarn 1 shim cannot resolve the cache directory, and
+# it breaks before install runs), and `environment:`, because the development
+# environment permits protected branches only and would refuse every PR job.
