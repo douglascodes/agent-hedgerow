@@ -25,6 +25,17 @@ Container sandboxing is rejected as the isolation boundary — too many escape v
 
 Both test suites exit non-zero when no test file matches. That is deliberate: a suite that reports success with zero tests is a vacuous pass, and this project treats those as worse than no test at all.
 
+## Pre-commit hook
+
+A husky `pre-commit` hook runs `lint-staged`, which formats and lints only the staged files and re-stages whatever it fixed. The commit is refused on any lint error *or warning* — `biome check` exits 0 on warnings by default, so `--error-on-warnings` is set explicitly. Without it, `noExplicitAny` and unused variables would pass through silently.
+
+Two behaviours worth knowing:
+
+- **Partially staged files.** lint-staged stashes unstaged hunks before running, so only the content you actually staged is formatted and committed. Without that, a hook would silently commit work you hadn't staged.
+- **Automatic install.** The `prepare` script wires the hook up on `yarn install`. Nothing manual, per clone.
+
+`git commit --no-verify` bypasses it. That is an escape hatch for a broken hook, not a routine override — a commit that skips it has not been linted.
+
 ## Test layout
 
 - `vitest.unit.config.ts` — `src/**/*.test.ts` and `test/unit/**/*.test.ts`. Unit tests live beside the code they cover.

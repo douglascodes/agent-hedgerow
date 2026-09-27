@@ -1,0 +1,11 @@
+# Formats and lints staged files, then re-stages whatever it fixed.
+#
+# Invoked bare rather than through yarn: husky puts node_modules/.bin on PATH,
+# so this resolves to the project's own lint-staged regardless of which yarn or
+# package manager happens to be active. `yarn lint-staged` would break for
+# anyone whose global yarn is v1.
+#
+# lint-staged stashes unstaged hunks before running, so a file that is only
+# partially staged is formatted from its staged content alone. Committing
+# unstaged work by accident is the failure this prevents.
+lint-staged

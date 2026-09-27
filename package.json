@@ -15,14 +15,20 @@
     "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:watch": "vitest --config vitest.unit.config.ts",
-    "lint": "biome check",
-    "lint:fix": "biome check --write",
+    "lint": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write --error-on-warnings",
     "format": "biome format --write",
-    "format:check": "biome format"
+    "format:check": "biome format",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,json}": "biome check --write --error-on-warnings --no-errors-on-unmatched"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@types/node": "^26.6.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
     "typescript": "^7.0.2",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"
