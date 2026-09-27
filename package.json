@@ -1,0 +1,38 @@
+{
+  "name": "agent-hedgerow",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Isolate LLM agents in virtual machines, so an agent's reachable world is the guest rather than the host",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "yarn@4.18.1",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:debug": "vitest --watch",
+    "test:unit:debug": "vitest --watch --project unit",
+    "test:integration:debug": "vitest --watch --project integration",
+    "lint": "biome check --error-on-warnings",
+    "lint:fix": "biome check --write --error-on-warnings",
+    "format": "biome format --write",
+    "format:check": "biome format",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,json}": "biome check --write --error-on-warnings --no-errors-on-unmatched"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.14",
+    "@types/node": "^26.6.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "vitest": "^5.0.1"
+  }
+}
