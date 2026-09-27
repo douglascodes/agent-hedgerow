@@ -16,7 +16,9 @@ Container sandboxing is rejected as the isolation boundary — too many escape v
 | `yarn test` | Both projects |
 | `yarn test:unit` | Fast. Pure logic only — no VM, no QEMU, no sockets |
 | `yarn test:integration` | Boots real QEMU VMs. Serial and slow |
-| `yarn test:watch` | Unit project in watch mode |
+| `yarn test:debug` | Both projects, watch mode |
+| `yarn test:unit:debug` | Unit project, watch mode |
+| `yarn test:integration:debug` | Integration project, watch mode |
 | `yarn typecheck` | `tsc --noEmit` |
 | `yarn lint` | Biome check — lint, formatting, and import order |
 | `yarn lint:fix` | Same, applying fixes |
